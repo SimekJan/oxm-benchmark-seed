@@ -1,0 +1,229 @@
+{
+  "tables": [
+    {
+      "name": "customers",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "integer",
+          "indexed": true,
+          "isKey": true,
+          "optional": false
+        },
+        {
+          "name": "customer_id",
+          "datatype": "integer",
+          "indexed": true,
+          "optional": true
+        },
+        {
+          "name": "company_name",
+          "datatype": "string",
+          "optional": false
+        },
+        {
+          "name": "city",
+          "datatype": "string",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "employees",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "integer",
+          "indexed": true,
+          "isKey": true,
+          "optional": false
+        },
+        {
+          "name": "employee_id",
+          "datatype": "integer",
+          "indexed": true,
+          "optional": true
+        },
+        {
+          "name": "last_name",
+          "datatype": "string",
+          "optional": false
+        },
+        {
+          "name": "first_name",
+          "datatype": "string",
+          "optional": false
+        },
+        {
+          "name": "birth_date",
+          "datatype": "date",
+          "optional": true
+        },
+        {
+          "name": "hire_date",
+          "datatype": "date",
+          "optional": true
+        },
+        {
+          "name": "city",
+          "datatype": "string",
+          "optional": true
+        },
+        {
+          "name": "reports_to",
+          "datatype": "integer",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "integer",
+          "indexed": true,
+          "isKey": true,
+          "optional": false
+        },
+        {
+          "name": "order_id",
+          "datatype": "integer",
+          "indexed": true,
+          "optional": true
+        },
+        {
+          "name": "order_date",
+          "datatype": "date",
+          "optional": true
+        },
+        {
+          "name": "employee_id",
+          "datatype": "integer",
+          "optional": true
+        },
+        {
+          "name": "customer_id",
+          "datatype": "integer",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "products",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "integer",
+          "indexed": true,
+          "isKey": true,
+          "optional": false
+        },
+        {
+          "name": "product_id",
+          "datatype": "integer",
+          "indexed": true,
+          "optional": true
+        },
+        {
+          "name": "product_name",
+          "datatype": "string",
+          "optional": false
+        },
+        {
+          "name": "unit_price",
+          "datatype": "float",
+          "optional": true
+        },
+        {
+          "name": "supplier_id",
+          "datatype": "integer",
+          "optional": true
+        },
+        {
+          "name": "category",
+          "datatype": "string",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "suppliers",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "integer",
+          "indexed": true,
+          "isKey": true,
+          "optional": false
+        },
+        {
+          "name": "supplier_id",
+          "datatype": "integer",
+          "indexed": true,
+          "optional": true
+        },
+        {
+          "name": "company_name",
+          "datatype": "string",
+          "optional": false
+        },
+        {
+          "name": "city",
+          "datatype": "string",
+          "optional": true
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "orders_customer",
+      "fromTable": "orders",
+      "fromColumn": "customer_id",
+      "toTable": "customers",
+      "toColumn": "id",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "name": "orders_employee",
+      "fromTable": "orders",
+      "fromColumn": "employee_id",
+      "toTable": "employees",
+      "toColumn": "id",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "name": "employee_reports_to",
+      "fromTable": "employees",
+      "fromColumn": "reports_to",
+      "toTable": "employees",
+      "toColumn": "id",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "name": "products_supplier",
+      "fromTable": "products",
+      "fromColumn": "supplier_id",
+      "toTable": "suppliers",
+      "toColumn": "id",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "name": "order_products",
+      "fromTable": "orders",
+      "fromColumn": "id",
+      "toTable": "products",
+      "toColumn": "id",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "name": "supplier_relationships",
+      "fromTable": "suppliers",
+      "fromColumn": "id",
+      "toTable": "suppliers",
+      "toColumn": "id",
+      "relationshipType": "many-to-many"
+    }
+  ]
+}
