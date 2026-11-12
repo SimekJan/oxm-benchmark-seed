@@ -1,0 +1,95 @@
+{
+  "name": "northwind_baisic_native",
+  "files": [
+    {
+      "name": "Query01_select_indexed.sql",
+      "format": ".sql",
+      "content": "SELECT *\nFROM employees\nWHERE employee_id = :id;\n"
+    },
+    {
+      "name": "Query02_select_non_indexed.sql",
+      "format": ".sql",
+      "content": "SELECT *\nFROM employees\nWHERE first_name = :first_name;\n"
+    },
+    {
+      "name": "Query03_range_query_indexed.sql",
+      "format": ".sql",
+      "content": "SELECT *\nFROM employees\nWHERE employee_id BETWEEN :id_min AND :id_max;\n"
+    },
+    {
+      "name": "Query04_range_query_non_indexed.sql",
+      "format": ".sql",
+      "content": "SELECT *\nFROM products\nWHERE unit_price BETWEEN :price_from AND :price_to;\n"
+    },
+    {
+      "name": "Query05_count.sql",
+      "format": ".sql",
+      "content": "SELECT city, COUNT(*)\nFROM employees\nGROUP BY city;\n"
+    },
+    {
+      "name": "Query06_max.sql",
+      "format": ".sql",
+      "content": "SELECT category, MAX(unit_price)\nFROM products\nGROUP BY category;\n"
+    },
+    {
+      "name": "Query07_join_indexed.sql",
+      "format": ".sql",
+      "content": "SELECT o.order_id, e.first_name, e.last_name\nFROM orders o\nINNER JOIN employees e ON o.employee_id = e.id;\n"
+    },
+    {
+      "name": "Query08_join_non_indexed.sql",
+      "format": ".sql",
+      "content": "SELECT c.company_name, c.city, e.first_name, e.last_name\nFROM customers c\nINNER JOIN employees e ON c.city = e.city;\n"
+    },
+    {
+      "name": "Query09_neighbors.sql",
+      "format": ".sql",
+      "content": "SELECT DISTINCT s.*, target.*\nFROM suppliers s\nJOIN supplier_relationship sr ON sr.supplier_id = s.id\nJOIN suppliers target ON target.id = sr.supplied_to_id\nWHERE s.id <> target.id;\n\nSELECT DISTINCT s.*, target.*\nFROM suppliers s\nJOIN supplier_relationship sr1 ON sr1.supplier_id = s.id\nJOIN supplier_relationship sr2 ON sr2.supplier_id = sr1.supplied_to_id\nJOIN suppliers target ON target.id = sr2.supplied_to_id\nWHERE s.id <> target.id;\n"
+    },
+    {
+      "name": "Query10_shortest_path.sql",
+      "format": ".sql",
+      "content": "WITH RECURSIVE path AS (\n    SELECT\n        s.id,\n        s.company_name,\n        s.supplier_id,\n        ARRAY[s.id] AS path_ids,\n        ARRAY[s.company_name]::varchar[] AS path_nodes,\n        0 AS depth\n    FROM suppliers s\n    WHERE s.supplier_id = :fromSupplier\n\n    UNION ALL\n\n    SELECT\n        next.id,\n        next.company_name,\n        next.supplier_id,\n        p.path_ids || next.id,\n        p.path_nodes || next.company_name,\n        p.depth + 1\n    FROM path p\n    JOIN supplier_relationship sr ON sr.supplier_id = p.id\n    JOIN suppliers next ON next.id = sr.supplied_to_id\n    WHERE p.depth < 10\n      AND NOT (next.id = ANY(p.path_ids))\n)\nSELECT array_to_string(path_nodes, ' -> ') AS path\nFROM path\nWHERE supplier_id = :toSupplier\nORDER BY depth\nLIMIT 1;\n"
+    },
+    {
+      "name": "Query11_optional_traversal.sql",
+      "format": ".sql",
+      "content": "SELECT\n    s.id AS supplier_id,\n    s.company_name AS supplier,\n    COUNT(sr.supplied_to_id) AS supplied_count\nFROM suppliers s\nLEFT JOIN supplier_relationship sr ON sr.supplier_id = s.id\nGROUP BY s.id, s.company_name;\n"
+    },
+    {
+      "name": "Query12_union.sql",
+      "format": ".sql",
+      "content": "SELECT city\nFROM suppliers\nUNION\nSELECT city\nFROM customers;\n"
+    },
+    {
+      "name": "Query13_intersect.sql",
+      "format": ".sql",
+      "content": "SELECT city\nFROM suppliers\nINTERSECT\nSELECT city\nFROM customers;\n"
+    },
+    {
+      "name": "Query14_diff.sql",
+      "format": ".sql",
+      "content": "SELECT c.company_name\nFROM customers c\nWHERE NOT EXISTS (\n    SELECT 1\n    FROM orders o\n    WHERE o.customer_id = c.id\n);\n"
+    },
+    {
+      "name": "Query15_sorting.sql",
+      "format": ".sql",
+      "content": "SELECT product_name, unit_price\nFROM products\nORDER BY unit_price;\n"
+    },
+    {
+      "name": "Query16_sorting_indexed.sql",
+      "format": ".sql",
+      "content": "SELECT product_id, product_name\nFROM products\nORDER BY product_id;\n"
+    },
+    {
+      "name": "Query17_distinct.sql",
+      "format": ".sql",
+      "content": "SELECT DISTINCT city\nFROM customers;\n"
+    },
+    {
+      "name": "Query18_map_reduce.sql",
+      "format": ".sql",
+      "content": "SELECT s.supplier_id, s.company_name, COUNT(*)\nFROM suppliers s\nJOIN products p ON p.supplier_id = s.id\nGROUP BY s.supplier_id, s.company_name;\n"
+    }
+  ]
+}
